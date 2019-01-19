@@ -32,6 +32,9 @@
     },
     "assets": ["assets"]
   },
+  "engines": {
+    "node": ">=8"
+  },
   "prettier": {
     "semi": true,
     "singleQuote": true,
