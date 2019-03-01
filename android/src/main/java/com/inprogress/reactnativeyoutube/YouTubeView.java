@@ -18,6 +18,7 @@ public class YouTubeView extends FrameLayout {
     private YouTubePlayerController mYouTubeController;
     private VideoFragment mVideoFragment;
     private boolean mHasSavedInstance = false;
+    private String mApiKey;
 
     public YouTubeView(ReactContext context) {
         super(context);
@@ -29,8 +30,10 @@ public class YouTubeView extends FrameLayout {
     }
 
     public void init() {
+        inflate(getContext(), R.layout.youtube_layout, this);
         mVideoFragment = VideoFragment.newInstance(this);
         mYouTubeController = new YouTubePlayerController(this);
+        mApiKey = null;
     }
 
     @Nullable
@@ -44,7 +47,7 @@ public class YouTubeView extends FrameLayout {
     protected void onAttachedToWindow() {
         if (!mHasSavedInstance) {
             FragmentManager fragmentManager = getReactContext().getCurrentActivity().getFragmentManager();
-            fragmentManager.beginTransaction().add(getId(), mVideoFragment).commit();
+            fragmentManager.beginTransaction().add(getId(), mVideoFragment).commitAllowingStateLoss();
         }
         super.onAttachedToWindow();
     }
@@ -152,12 +155,17 @@ public class YouTubeView extends FrameLayout {
         reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(getId(), "fullscreen", event);
     }
 
-    public void setApiKey(String apiKey) {
+    public void initPlayer() {
         try {
-            mVideoFragment.initialize(apiKey, mYouTubeController);
+            mVideoFragment.initialize(mApiKey, mYouTubeController);
         } catch (Exception e) {
             receivedError(e.getMessage());
         }
+    }
+
+    public void setApiKey(String apiKey) {
+        mApiKey = apiKey;
+        initPlayer();
     }
 
     public void setVideoId(String str) {
@@ -194,19 +202,5 @@ public class YouTubeView extends FrameLayout {
 
     public void setResumePlay(boolean bool) {
         mYouTubeController.setResumePlay(bool);
-    }
-
-    /**
-     * Spread the onInitializationStarted event to the controller
-     */
-    public void onInitializationStarted() {
-      mYouTubeController.onInitializationStarted();
-    }
-
-    /**
-     * Spread the player released event to the controller
-     */
-    public void onPlayerRelease() {
-      mYouTubeController.onPlayerRelease();
     }
 }
