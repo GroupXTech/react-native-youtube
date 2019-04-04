@@ -913,7 +913,12 @@ NSString static *const kYTPlayerSyndicationRegexPattern = @"^https://tpc.googles
     config.userContentController = wkUController;
     config.applicationNameForUserAgent = @"app-embedded-web-view";
     config.allowsInlineMediaPlayback = YES;
-    config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+    if (@available(iOS 10.0, *)) {
+         config.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+    }
+    else {
+         config.mediaPlaybackRequiresUserAction = NO;
+    }
     WKWebView *webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:config];
     webView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
     webView.scrollView.scrollEnabled = NO;
